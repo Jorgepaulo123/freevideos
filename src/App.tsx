@@ -21,6 +21,7 @@ function App() {
     return false;
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [detectedPlatform, setDetectedPlatform] = useState<Platform | null>(null);
 
   useEffect(() => {
     localStorage.setItem('darkMode', darkMode.toString());
@@ -52,7 +53,17 @@ function App() {
       }
 
       const data: DownloadResponse = await response.json();
-      setDownloadUrl(`https://freevideo-production.up.railway.app${data.download_url}`);
+      
+      // Extrair o nome do arquivo do caminho
+      const filename = data.file_path.split('/').pop() || `${platform}_video.mp4`;
+      
+      // Usar a nova rota de download
+      const downloadUrl = `https://freevideo-production.up.railway.app/download/${filename}`;
+      
+      // Iniciar o download diretamente
+      window.location.href = downloadUrl;
+      
+      setDownloadUrl(downloadUrl);
     } catch (err) {
       setError('Failed to download video. Please check the URL and try again.');
     } finally {
@@ -66,6 +77,42 @@ function App() {
       element.scrollIntoView({ behavior: 'smooth' });
     }
     setMobileMenuOpen(false);
+  };
+
+  // Função para detectar a plataforma baseada na URL
+  const detectPlatform = (url: string): Platform | null => {
+    const urlLower = url.toLowerCase();
+    
+    if (urlLower.includes('facebook.com') || urlLower.includes('fb.watch')) {
+      return 'facebook';
+    }
+    if (urlLower.includes('instagram.com')) {
+      return 'instagram';
+    }
+    if (urlLower.includes('tiktok.com')) {
+      return 'tiktok';
+    }
+    if (urlLower.includes('twitter.com') || urlLower.includes('x.com')) {
+      return 'x';
+    }
+    return null;
+  };
+
+  // Atualizar o handler do input
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newUrl = e.target.value;
+    setUrl(newUrl);
+    setDetectedPlatform(detectPlatform(newUrl));
+  };
+
+  const handlePaste = async () => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      setUrl(clipboardText);
+      setDetectedPlatform(detectPlatform(clipboardText));
+    } catch (err) {
+      setError('Failed to paste from clipboard. Please paste the URL manually.');
+    }
   };
 
   return (
@@ -173,53 +220,86 @@ function App() {
                 <label htmlFor="url" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Video URL
                 </label>
-                <input
-                  type="text"
-                  id="url"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                  placeholder="Paste your video URL here..."
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                />
+                <div className="relative flex gap-2">
+                  <input
+                    type="text"
+                    id="url"
+                    className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    placeholder="Click paste button or paste URL here..."
+                    value={url}
+                    onChange={handleUrlChange}
+                  />
+                  <button
+                    onClick={handlePaste}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 transform hover:scale-105 flex items-center gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                      <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                    </svg>
+                    Paste
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <button
-                  onClick={() => handleDownload('tiktok')}
-                  disabled={loading || !url}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Video className="w-5 h-5" />
-                  TikTok
-                </button>
+              {/* Botão dinâmico com animação */}
+              <div className="relative h-[60px] mb-6">
+                {detectedPlatform && (
+                  <div className="absolute w-full animate-fade-slide-up">
+                    {detectedPlatform === 'tiktok' && (
+                      <button
+                        onClick={() => handleDownload('tiktok')}
+                        disabled={loading || !url}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                      >
+                        <Video className="w-5 h-5" />
+                        Download from TikTok
+                      </button>
+                    )}
 
-                <button
-                  onClick={() => handleDownload('instagram')}
-                  disabled={loading || !url}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Instagram className="w-5 h-5" />
-                  Instagram
-                </button>
+                    {detectedPlatform === 'instagram' && (
+                      <button
+                        onClick={() => handleDownload('instagram')}
+                        disabled={loading || !url}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                      >
+                        <Instagram className="w-5 h-5" />
+                        Download from Instagram
+                      </button>
+                    )}
 
-                <button
-                  onClick={() => handleDownload('facebook')}
-                  disabled={loading || !url}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Facebook className="w-5 h-5" />
-                  Facebook
-                </button>
+                    {detectedPlatform === 'facebook' && (
+                      <button
+                        onClick={() => handleDownload('facebook')}
+                        disabled={loading || !url}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                      >
+                        <Facebook className="w-5 h-5" />
+                        Download from Facebook
+                      </button>
+                    )}
 
-                <button
-                  onClick={() => handleDownload('x')}
-                  disabled={loading || !url}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Twitter className="w-5 h-5" />
-                  X (Twitter)
-                </button>
+                    {detectedPlatform === 'x' && (
+                      <button
+                        onClick={() => handleDownload('x')}
+                        disabled={loading || !url}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                      >
+                        <Twitter className="w-5 h-5" />
+                        Download from X (Twitter)
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
+
+              {!detectedPlatform && url && (
+                <div className="bg-yellow-50 dark:bg-yellow-900/50 p-4 rounded-lg mb-6">
+                  <p className="text-yellow-800 dark:text-yellow-200">
+                    Please enter a valid URL from TikTok, Instagram, Facebook, or X (Twitter)
+                  </p>
+                </div>
+              )}
 
               {loading && (
                 <div className="text-center py-8">
@@ -236,15 +316,16 @@ function App() {
 
               {downloadUrl && (
                 <div className="bg-green-50 dark:bg-green-900/50 p-6 rounded-lg">
-                  <h3 className="text-green-800 dark:text-green-200 font-medium mb-2">Download Ready!</h3>
-                  <a
-                    href={downloadUrl}
-                    download
-                    className="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
-                  >
-                    <Download className="w-5 h-5" />
-                    Download Video
-                  </a>
+                  <h3 className="text-green-800 dark:text-green-200 font-medium mb-2">Download Started!</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Se o download não começar automaticamente, 
+                    <a
+                      href={downloadUrl}
+                      className="text-purple-600 dark:text-purple-400 underline ml-1"
+                    >
+                      clique aqui
+                    </a>
+                  </p>
                 </div>
               )}
             </div>
