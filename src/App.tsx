@@ -98,20 +98,23 @@ function App() {
     return null;
   };
 
-  // Atualizar o handler do input
+  // Atualizar o handler do input para garantir que funcione
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setUrl(newUrl);
-    setDetectedPlatform(detectPlatform(newUrl));
+    // Detectar a plataforma com um pequeno delay
+    setTimeout(() => {
+      setDetectedPlatform(detectPlatform(newUrl));
+    }, 100);
   };
 
   const handlePaste = async () => {
     try {
-      const clipboardText = await navigator.clipboard.readText();
-      setUrl(clipboardText);
-      setDetectedPlatform(detectPlatform(clipboardText));
+      const text = await navigator.clipboard.readText();
+      setUrl(text);
+      setDetectedPlatform(detectPlatform(text));
     } catch (err) {
-      setError('Failed to paste from clipboard. Please paste the URL manually.');
+      console.error('Failed to paste:', err);
     }
   };
 
@@ -221,17 +224,36 @@ function App() {
                   Video URL
                 </label>
                 <div className="relative flex gap-2">
-                  <input
-                    type="text"
-                    id="url"
-                    className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                    placeholder="Click paste button or paste URL here..."
-                    value={url}
-                    onChange={handleUrlChange}
-                  />
+                  {/* Container com gradiente animado */}
+                  <div className="relative flex-1 p-[2px] bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 rounded-lg animate-gradient-xy overflow-hidden group">
+                    {/* Efeito de brilho */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                    
+                    {/* Input com efeito de respiração */}
+                    <input
+                      type="text"
+                      id="url"
+                      className="w-full px-4 py-3 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
+                               placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 
+                               transition-all duration-300 group-hover:shadow-lg group-hover:shadow-purple-500/25"
+                      placeholder="Paste or type video URL here..."
+                      value={url}
+                      onChange={handleUrlChange}
+                      onPaste={(e) => {
+                        const text = e.clipboardData.getData('text');
+                        setUrl(text);
+                        setDetectedPlatform(detectPlatform(text));
+                      }}
+                    />
+                  </div>
+
+                  {/* Botão de colar com efeito hover melhorado */}
                   <button
                     onClick={handlePaste}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 transform hover:scale-105 flex items-center gap-2"
+                    className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg
+                             hover:from-purple-700 hover:to-pink-600 transition-all duration-300
+                             transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50
+                             flex items-center gap-2 font-medium"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
@@ -242,56 +264,54 @@ function App() {
                 </div>
               </div>
 
-              {/* Botão dinâmico com animação */}
-              <div className="relative h-[60px] mb-6">
-                {detectedPlatform && (
-                  <div className="absolute w-full animate-fade-slide-up">
-                    {detectedPlatform === 'tiktok' && (
-                      <button
-                        onClick={() => handleDownload('tiktok')}
-                        disabled={loading || !url}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                      >
-                        <Video className="w-5 h-5" />
-                        Download from TikTok
-                      </button>
-                    )}
+              {/* Substituir a grid de botões por um botão dinâmico */}
+              {detectedPlatform && (
+                <div className="mb-6">
+                  {detectedPlatform === 'tiktok' && (
+                    <button
+                      onClick={() => handleDownload('tiktok')}
+                      disabled={loading || !url}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Video className="w-5 h-5" />
+                      Download from TikTok
+                    </button>
+                  )}
 
-                    {detectedPlatform === 'instagram' && (
-                      <button
-                        onClick={() => handleDownload('instagram')}
-                        disabled={loading || !url}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                      >
-                        <Instagram className="w-5 h-5" />
-                        Download from Instagram
-                      </button>
-                    )}
+                  {detectedPlatform === 'instagram' && (
+                    <button
+                      onClick={() => handleDownload('instagram')}
+                      disabled={loading || !url}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Instagram className="w-5 h-5" />
+                      Download from Instagram
+                    </button>
+                  )}
 
-                    {detectedPlatform === 'facebook' && (
-                      <button
-                        onClick={() => handleDownload('facebook')}
-                        disabled={loading || !url}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                      >
-                        <Facebook className="w-5 h-5" />
-                        Download from Facebook
-                      </button>
-                    )}
+                  {detectedPlatform === 'facebook' && (
+                    <button
+                      onClick={() => handleDownload('facebook')}
+                      disabled={loading || !url}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Facebook className="w-5 h-5" />
+                      Download from Facebook
+                    </button>
+                  )}
 
-                    {detectedPlatform === 'x' && (
-                      <button
-                        onClick={() => handleDownload('x')}
-                        disabled={loading || !url}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                      >
-                        <Twitter className="w-5 h-5" />
-                        Download from X (Twitter)
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
+                  {detectedPlatform === 'x' && (
+                    <button
+                      onClick={() => handleDownload('x')}
+                      disabled={loading || !url}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Twitter className="w-5 h-5" />
+                      Download from X (Twitter)
+                    </button>
+                  )}
+                </div>
+              )}
 
               {!detectedPlatform && url && (
                 <div className="bg-yellow-50 dark:bg-yellow-900/50 p-4 rounded-lg mb-6">
@@ -367,51 +387,78 @@ function App() {
             </div>
           </section>
 
-          {/* Contact Section */}
-          <section id="contact" className="py-16">
+          {/* Substituir a seção de contato por "Why Choose Our Service" */}
+          <section id="features" className="py-16">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-              <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Contact Us</h2>
-              <form className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                    placeholder="Your name"
-                  />
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-8">
+                Why Choose Our Service
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                {/* Feature Card 1 */}
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-600 
+                              p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mb-4">
+                    <Download className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Fast Downloads</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Download your favorite videos instantly with our high-speed servers
+                  </p>
                 </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                    placeholder="your@email.com"
-                  />
+
+                {/* Feature Card 2 */}
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 
+                              p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-4">
+                    <Info className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Easy to Use</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Simply paste your video URL and click download - no registration required
+                  </p>
                 </div>
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    rows={4}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                    placeholder="Your message..."
-                  ></textarea>
+
+                {/* Feature Card 3 */}
+                <div className="bg-gradient-to-br from-pink-50 to-orange-50 dark:from-gray-700 dark:to-gray-600 
+                              p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-orange-500 rounded-lg flex items-center justify-center mb-4">
+                    <Video className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Multiple Platforms</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Support for all major social media platforms in one place
+                  </p>
                 </div>
-                <button
-                  type="submit"
-                  className="w-full bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition"
-                >
-                  Send Message
-                </button>
-              </form>
+              </div>
+
+              {/* Statistics Section */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-gray-200 dark:border-gray-600">
+                <div className="text-center">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    100%
+                  </div>
+                  <div className="text-gray-600 dark:text-gray-300 mt-1">Free Service</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    24/7
+                  </div>
+                  <div className="text-gray-600 dark:text-gray-300 mt-1">Availability</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-orange-600 bg-clip-text text-transparent">
+                    4+
+                  </div>
+                  <div className="text-gray-600 dark:text-gray-300 mt-1">Platforms</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+                    Fast
+                  </div>
+                  <div className="text-gray-600 dark:text-gray-300 mt-1">Processing</div>
+                </div>
+              </div>
             </div>
           </section>
 
