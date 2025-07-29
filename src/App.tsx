@@ -40,7 +40,7 @@ function App() {
     try {
       const encodedUrl = encodeURIComponent(url);
       const response = await fetch(
-        `https://freevideo-production.up.railway.app/download/${platform}?url=${encodedUrl}`,
+        `https://freevideo-pbcy.onrender.com/download/${platform}?url=${encodedUrl}`,
         {
           headers: {
             'accept': 'application/json'
@@ -58,7 +58,7 @@ function App() {
       const filename = data.file_path.split('/').pop() || `${platform}_video.mp4`;
       
       // Usar a nova rota de download
-      const downloadUrl = `https://freevideo-production.up.railway.app/download/${filename}`;
+      const downloadUrl = `https://freevideo-pbcy.onrender.com/download/${filename}`;
       
       // Iniciar o download diretamente
       window.location.href = downloadUrl;
@@ -209,7 +209,7 @@ function App() {
             </div>
 
             {/* Main Content */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8">
+            <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-xl shadow-2xl p-8 border border-white/20 dark:border-gray-700/30">
               <div className="mb-8">
                 <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
                   Download Videos for Free
@@ -353,7 +353,7 @@ function App() {
 
           {/* About Section */}
           <section id="about" className="py-16">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-xl shadow-lg p-8 border border-white/20 dark:border-gray-700/30">
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">About Our Service</h2>
               <div className="prose dark:prose-invert max-w-none">
                 <p className="text-gray-600 dark:text-gray-300">
@@ -368,7 +368,7 @@ function App() {
 
           {/* FAQ Section */}
           <section id="faq" className="py-16">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-xl shadow-lg p-8 border border-white/20 dark:border-gray-700/30">
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Frequently Asked Questions</h2>
               <div className="space-y-6">
                 <div>
@@ -389,15 +389,17 @@ function App() {
 
           {/* Substituir a seção de contato por "Why Choose Our Service" */}
           <section id="features" className="py-16">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-xl shadow-lg p-8 border border-white/20 dark:border-gray-700/30">
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-8">
                 Why Choose Our Service
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                 {/* Feature Card 1 */}
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-600 
-                              p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 p-6 rounded-xl 
+                                border border-white/20 dark:border-gray-700/30
+                                shadow-md hover:shadow-xl transition-all duration-300 
+                                transform hover:-translate-y-1 hover:bg-white/40 dark:hover:bg-gray-800/40">
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mb-4">
                     <Download className="w-6 h-6 text-white" />
                   </div>
@@ -408,8 +410,10 @@ function App() {
                 </div>
 
                 {/* Feature Card 2 */}
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 
-                              p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 p-6 rounded-xl 
+                                border border-white/20 dark:border-gray-700/30
+                                shadow-md hover:shadow-xl transition-all duration-300 
+                                transform hover:-translate-y-1 hover:bg-white/40 dark:hover:bg-gray-800/40">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-4">
                     <Info className="w-6 h-6 text-white" />
                   </div>
@@ -420,8 +424,10 @@ function App() {
                 </div>
 
                 {/* Feature Card 3 */}
-                <div className="bg-gradient-to-br from-pink-50 to-orange-50 dark:from-gray-700 dark:to-gray-600 
-                              p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 p-6 rounded-xl 
+                                border border-white/20 dark:border-gray-700/30
+                                shadow-md hover:shadow-xl transition-all duration-300 
+                                transform hover:-translate-y-1 hover:bg-white/40 dark:hover:bg-gray-800/40">
                   <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-orange-500 rounded-lg flex items-center justify-center mb-4">
                     <Video className="w-6 h-6 text-white" />
                   </div>
@@ -433,7 +439,7 @@ function App() {
               </div>
 
               {/* Statistics Section */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-gray-200 dark:border-gray-600">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-white/20 dark:border-gray-700/30">
                 <div className="text-center">
                   <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                     100%
@@ -463,7 +469,7 @@ function App() {
           </section>
 
           {/* Ad Space - Bottom */}
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur rounded-lg p-4 my-8 text-center">
+          <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-4 mb-8 text-center border border-white/20 dark:border-gray-700/30">
             <p className="text-sm text-gray-500 dark:text-gray-400">Advertisement</p>
             {/* Add your Google AdSense code here */}
           </div>
