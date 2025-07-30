@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import AdSmartlink from './components/AdSmartlink';
+import AdverticaBanner from './components/AdverticaBanner';
+import VisualAd from './components/VisualAd';
+import IconWrapper from './components/IconWrapper';
+
+// Importar apenas os ícones necessários
 import { Download, Facebook, Twitter, Video, Instagram, Loader2, Info, Moon, Sun, Menu, X as XIcon } from 'lucide-react';
 
 type Platform = 'tiktok' | 'facebook' | 'x' | 'instagram';
@@ -203,10 +209,7 @@ function App() {
           {/* Home Section */}
           <section id="home" className="py-8">
             {/* Ad Space - Top */}
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur rounded-lg p-4 mb-8 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Advertisement</p>
-              {/* Add your Google AdSense code here */}
-            </div>
+            <AdverticaBanner position="top" />
 
             {/* Main Content */}
             <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-xl shadow-2xl p-8 border border-white/20 dark:border-gray-700/30">
@@ -348,6 +351,12 @@ function App() {
                   </p>
                 </div>
               )}
+
+              {/* Smartlink Ad - Posição estratégica após download */}
+              <AdSmartlink />
+              
+              {/* Visual Ad - Anúncios com imagens e ofertas */}
+              <VisualAd />
             </div>
           </section>
 
@@ -362,6 +371,11 @@ function App() {
                 <p className="text-gray-600 dark:text-gray-300 mt-4">
                   We prioritize user privacy and security, ensuring that no personal information is stored or shared. Our service is completely web-based, requiring no software installation or registration.
                 </p>
+              </div>
+
+              {/* Smartlink Ad - Posição na seção About */}
+              <div className="mt-8">
+                <AdSmartlink />
               </div>
             </div>
           </section>
@@ -469,10 +483,7 @@ function App() {
           </section>
 
           {/* Ad Space - Bottom */}
-          <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-4 mb-8 text-center border border-white/20 dark:border-gray-700/30">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Advertisement</p>
-            {/* Add your Google AdSense code here */}
-          </div>
+          <AdverticaBanner position="bottom" />
         </main>
 
         <footer className="bg-white/10 backdrop-blur-md border-t border-white/20 mt-12">

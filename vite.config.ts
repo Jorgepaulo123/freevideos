@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     exclude: ['lucide-react'],
+    include: ['react', 'react-dom']
   },
   build: {
     // Otimizações para reduzir uso de memória
@@ -23,6 +24,14 @@ export default defineConfig({
     // Configurações do servidor para usar menos memória
     hmr: {
       overlay: false
+    },
+    // Limitar recursos
+    fs: {
+      strict: false
     }
+  },
+  // Otimizações para resolver ERR_INSUFFICIENT_RESOURCES
+  esbuild: {
+    target: 'es2020'
   }
 })
