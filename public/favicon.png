@@ -1,1 +1,15 @@
- 
+<!-- 
+Para criar um favicon.png funcional:
+
+1. Copie o conteúdo do favicon.svg
+2. Acesse: https://convertio.co/svg-png/
+3. Cole o SVG e configure:
+   - Tamanho: 32x32 pixels
+   - Formato: PNG
+4. Baixe e substitua este arquivo
+
+OU use este comando (se tiver ImageMagick):
+convert favicon.svg -resize 32x32 favicon.png
+
+O favicon atual é um placeholder. Substitua pelo PNG gerado.
+--> 

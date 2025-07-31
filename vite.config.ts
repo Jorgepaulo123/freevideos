@@ -9,16 +9,21 @@ export default defineConfig({
     include: ['react', 'react-dom']
   },
   build: {
-    // Otimizações para reduzir uso de memória
+    // Otimizações para reduzir uso de memória e JavaScript não utilizado
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          ui: ['lucide-react']
-        }
+          ui: ['lucide-react'],
+          ads: ['./src/components/AdSmartlink', './src/components/AdverticaBanner', './src/components/VisualAd']
+        },
+        // Tree shaking mais agressivo
+        experimentalMinChunkSize: 10000
       }
-    }
+    },
+    // Otimizações para reduzir bundle size
+    minify: 'esbuild'
   },
   server: {
     // Configurações do servidor para usar menos memória

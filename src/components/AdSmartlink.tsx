@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 
 interface AdSmartlinkProps {
   className?: string;
@@ -40,10 +40,10 @@ const AdSmartlink: React.FC<AdSmartlinkProps> = ({ className, style }) => {
     return () => clearInterval(interval);
   }, [offers.length]);
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     // Abrir em nova aba
     window.open(smartlinkUrl, '_blank', 'noopener,noreferrer');
-  };
+  }, [smartlinkUrl]);
 
   const currentOfferData = offers[currentOffer];
 
@@ -149,4 +149,4 @@ const AdSmartlink: React.FC<AdSmartlinkProps> = ({ className, style }) => {
   );
 };
 
-export default AdSmartlink; 
+export default memo(AdSmartlink); 

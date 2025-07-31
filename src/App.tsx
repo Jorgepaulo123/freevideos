@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import AdSmartlink from './components/AdSmartlink';
 import AdverticaBanner from './components/AdverticaBanner';
 import VisualAd from './components/VisualAd';
 import IconWrapper from './components/IconWrapper';
+import { useDebounce } from './hooks/useDebounce';
 
 // Importar apenas os ícones necessários
 import { Download, Facebook, Twitter, Video, Instagram, Loader2, Info, Moon, Sun, Menu, X as XIcon } from 'lucide-react';
@@ -104,15 +105,21 @@ function App() {
     return null;
   };
 
+  // Debounce para otimizar performance
+  const debouncedUrl = useDebounce(url, 300);
+
   // Atualizar o handler do input para garantir que funcione
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setUrl(newUrl);
-    // Detectar a plataforma com um pequeno delay
-    setTimeout(() => {
-      setDetectedPlatform(detectPlatform(newUrl));
-    }, 100);
-  };
+  }, []);
+
+  // Detectar plataforma com debounce
+  useEffect(() => {
+    if (debouncedUrl) {
+      setDetectedPlatform(detectPlatform(debouncedUrl));
+    }
+  }, [debouncedUrl]);
 
   const handlePaste = async () => {
     try {
@@ -144,6 +151,8 @@ function App() {
                 <button
                   onClick={() => setDarkMode(!darkMode)}
                   className="p-2 rounded-full hover:bg-white/10 transition"
+                  aria-label={darkMode ? "Mudar para modo claro" : "Mudar para modo escuro"}
+                  title={darkMode ? "Mudar para modo claro" : "Mudar para modo escuro"}
                 >
                   {darkMode ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-white" />}
                 </button>
@@ -154,12 +163,16 @@ function App() {
                 <button
                   onClick={() => setDarkMode(!darkMode)}
                   className="p-2 rounded-full hover:bg-white/10 transition mr-2"
+                  aria-label={darkMode ? "Mudar para modo claro" : "Mudar para modo escuro"}
+                  title={darkMode ? "Mudar para modo claro" : "Mudar para modo escuro"}
                 >
                   {darkMode ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-white" />}
                 </button>
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   className="p-2 rounded-full hover:bg-white/10 transition"
+                  aria-label={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+                  title={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
                 >
                   {mobileMenuOpen ? (
                     <XIcon className="w-6 h-6 text-white" />
